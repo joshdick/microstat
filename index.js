@@ -41,7 +41,7 @@ if (!process.env.POST_URL_TEMPLATE.includes('${postName}')) {
 const app = express();
 const formatter = new MicropubFormatter({
 	deriveCategory: false, // don't write categories
-	layoutName: 'microblog_post',
+	layoutName: process.env.POST_LAYOUT_NAME || false,
 	noMarkdown: true // input is already expected to be in Markdown format
 });
 

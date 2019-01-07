@@ -1,3 +1,5 @@
+# ----- Required Configuration -----
+
 # Which local TCP port the server should listen on.
 LISTEN_PORT=8080
 
@@ -20,6 +22,11 @@ LOCAL_POSTS_DIR=/local/path/containing/your/markdown/files
 # Local path to a script that will consume written Microblog posts
 # (Markdown files) in `LOCAL_POSTS_DIR` and publish them to the Internet.
 PUBLISH_COMMAND=/path/to/a/script
+
+# ----- Optional Configuration -----
+
+# If set, Jekyll-style layout name that will be included in each post.
+POST_LAYOUT_NAME=microblog_post
 
 # URL of an RSS/Atom/JSON feed that will contain Microblog posts after `PUBLISH_COMMAND` runs.
 # If set, will ping [micro.blog](https://micro.blog) with that feed, so micro.blog knows to check for new posts.
