@@ -2,7 +2,7 @@
 
 A self-hosted Micropub endpoint for statically-generated microblogs. 📝⚡️
 
-# What Is This Thing?
+## What Is This Thing?
 
 microstat lets you publish [Markdown](https://en.wikipedia.org/wiki/Markdown) posts to a statically-generated [microblog](https://en.wikipedia.org/wiki/Microblogging) via [Micropub](https://indieweb.org/Micropub), with automatically-sent [Webmentions](https://indieweb.org/Webmention) and integration with the [micro.blog service](https://micro.blog).
 
@@ -17,7 +17,7 @@ Here's how it works:
 	* Will attempt to automatically discover the Webmention endpoint, or will use [micro.blog](https://micro.blog)'s Webmention endpoint if you're replying to a micro.blog post
 * If you use micro.blog, optionally ping micro.blog with your microblog's RSS/Atom/JSON feed so your posts are instantly mirrored there
 
-# Get Going
+## Get Going
 
 microstat requires [Node.js](https://nodejs.org) 7.6 or newer. Once you've installed Node.js:
 
@@ -50,6 +50,6 @@ location /micropub {
 }
 ```
 
-# Contributing
+## Contributing
 
 Issues and pull requests are welcome! 🙂
