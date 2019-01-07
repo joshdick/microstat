@@ -14,8 +14,8 @@ Here's how it works:
 * When it receives a Micropub post, it writes a Markdown file to a location you configure
 * Once the Markdown file is written, it runs a command you configure (that would trigger something like [Jekyll](https://jekyllrb.com/) or [Hugo](https://gohugo.io/) to build and publish your microblog)
 * Once your microblog is updated, it sends a Webmention if your post is a reply to someone else's post
-	* It will use [micro.blog](https://micro.blog) Webmention endpoint if you're replying to a micro.blog post, or will attempt to automatically discover a Webmention endpoint otherwise
-* If you use micro.blog, optionally ping it with your microblog's RSS/Atom/JSON feed so your posts are instantly mirrored to micro.blog
+	* Will attempt to automatically discover the Webmention endpoint, or will use [micro.blog](https://micro.blog)'s Webmention endpoint if you're replying to a micro.blog post
+* If you use micro.blog, optionally ping micro.blog with your microblog's RSS/Atom/JSON feed so your posts are instantly mirrored there
 
 # Get Going
 
