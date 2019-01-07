@@ -1,0 +1,17 @@
+# Sample systemd unit file.
+
+[Unit]
+Description=microstat
+
+[Service]
+ExecStart=npm start
+WorkingDirectory=/path/to/microstat
+LimitNOFILE=4096
+IgnoreSIGPIPE=false
+KillMode=control-group
+User=johnsmith
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

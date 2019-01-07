@@ -1,0 +1,27 @@
+# Which local TCP port the server should listen on.
+LISTEN_PORT=8080
+
+# Template that describes where individual Microblog posts live on your website.
+# `${postName}` must be included, and will be replaced with a generated name.
+POST_URL_TEMPLATE=https://example.com/microblog/${postName}.html
+
+# Your IndieAuth-enabled website.
+# Will be used as the IndieAuth identity.
+INDIEAUTH_IDENTITY=https://example.com
+
+# IndieAuth token endpoint.
+# If your website includes a `<link rel="token_endpoint">` tag, duplicate its value here.
+INDIEAUTH_TOKEN_ENDPOINT=https://tokens.indieauth.com/token
+
+# Local path to a folder where Microblog posts
+# (Markdown files) will be written.
+LOCAL_POSTS_DIR=/local/path/containing/your/markdown/files
+
+# Local path to a script that will consume written Microblog posts
+# (Markdown files) in `LOCAL_POSTS_DIR` and publish them to the Internet.
+PUBLISH_COMMAND=/path/to/a/script
+
+# URL of an RSS/Atom/JSON feed that will contain Microblog posts after `PUBLISH_COMMAND` runs.
+# If set, will ping [micro.blog](https://micro.blog) with that feed, so micro.blog knows to check for new posts.
+# If you don't use https://micro.blog, leave this unset.
+MICROBLOG_PING_FEED_URL=https://example.com/microblog/rss.xml
