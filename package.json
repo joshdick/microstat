@@ -29,7 +29,7 @@
     "send-webmention": "2.0.0"
   },
   "devDependencies": {
-    "eslint": "5.14.0"
+    "eslint": "5.14.1"
   },
   "repository": {
     "type": "git",
