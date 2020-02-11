@@ -25,7 +25,7 @@
     "minilog": "3.1.0",
     "mkdirp": "1.0.3",
     "moment": "2.24.0",
-    "request": "2.88.0",
+    "request": "2.88.2",
     "send-webmention": "2.0.0"
   },
   "devDependencies": {
