@@ -26,9 +26,20 @@ PUBLISH_COMMAND=/path/to/a/script
 # ----- Optional Configuration -----
 
 # If set, Jekyll-style layout name that will be included in each post.
-POST_LAYOUT_NAME=microblog_post
+#POST_LAYOUT_NAME=microblog_post
+
+# If set, controls the key that tag values will be assigned to
+# in the generated front matter of each post.
+# Defaults to `tags` if unset.
+#POST_TAGS_KEY=tags
+
+# If set, controls the format of the tags list
+# in the generated front matter of each post.
+# Valid values are `space_delimited` or `yaml_list`.
+# Defaults to `space_delimited` if unset.
+#POST_TAGS_STYLE=space_delimited
 
 # URL of an RSS/Atom/JSON feed that will contain Microblog posts after `PUBLISH_COMMAND` runs.
 # If set, will ping [micro.blog](https://micro.blog) with that feed, so micro.blog knows to check for new posts.
 # If you don't use https://micro.blog, leave this unset.
-MICROBLOG_PING_FEED_URL=https://example.com/microblog/rss.xml
+#MICROBLOG_PING_FEED_URL=https://example.com/microblog/rss.xml

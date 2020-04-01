@@ -12,12 +12,12 @@ This enables you to post to your static microblog entirely using the web (for ex
 
 Here's how it works:
 
-* A running microstat server acts as a [Micropub](https://indieweb.org/Micropub) endpoint
-* When it receives a Micropub post, it writes a Markdown file to a location you configure
-* Once the Markdown file is written, it runs a command you configure (that would trigger something like [Jekyll](https://jekyllrb.com/) or [Hugo](https://gohugo.io/) to build and publish your microblog)
-* Once your microblog is updated, it sends a Webmention if your post is a reply to someone else's post
-	* Will attempt to automatically discover the Webmention endpoint, or will use [micro.blog](https://micro.blog)'s Webmention endpoint if you're replying to a micro.blog post
-* If you use micro.blog, optionally ping micro.blog with your microblog's RSS/Atom/JSON feed so your posts are instantly mirrored there
+- A running microstat server acts as a [Micropub](https://indieweb.org/Micropub) endpoint
+- When it receives a Micropub post, it writes a Markdown file to a location you configure
+- Once the Markdown file is written, it runs a command you configure (that would trigger something like [Jekyll](https://jekyllrb.com/) or [Hugo](https://gohugo.io/) to build and publish your microblog)
+- Once your microblog is updated, it sends a Webmention if your post is a reply to someone else's post
+  - Will attempt to automatically discover the Webmention endpoint, or will use [micro.blog](https://micro.blog)'s Webmention endpoint if you're replying to a micro.blog post
+- If you use micro.blog, optionally ping micro.blog with your microblog's RSS/Atom/JSON feed so your posts are instantly mirrored there
 
 ## Get Going
 
@@ -38,13 +38,13 @@ Note that microstat doesn't need to run on the same port, or even the same serve
 
 Here's how I proxy to microstat on [my microblog](https://joshdick.net/microblog):
 
-1) Advertise my site's Micropub endpoint by including the following in its HTML:
+1. Advertise my site's Micropub endpoint by including the following in its HTML:
 
 ```html
 <link rel="micropub" href="https://joshdick.net/micropub" />
 ```
 
-2) Configure [nginx](https://nginx.org) to proxy requests sent to the advertised Micropub endpoint to a microstat server that's running on an entirely different machine/port (at `https://example.com:3141`):
+2. Configure [nginx](https://nginx.org) to proxy requests sent to the advertised Micropub endpoint to a microstat server that's running on an entirely different machine/port (at `https://example.com:3141`):
 
 ```nginx
 location /micropub {

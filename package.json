@@ -11,13 +11,17 @@
     "micropub",
     "static"
   ],
-  "main": "index.js",
+  "main": "dist/microstat.js",
   "scripts": {
-    "lint": "eslint index.js",
-    "start": "node index.js",
+    "build": "tsc",
+    "lint": "eslint 'src/**/*.{j,t}s' && prettier --check 'src/**/*.{js,ts,json,md}' '*.{json,md}'",
+    "lint:fix": "eslint --fix 'src/**/*.{j,t}s' && prettier --write 'src/**/*.{js,ts,json,md}' '*.{json,md}'",
+    "start": "yarn build && node dist/microstat.js",
+    "start:dev": "tsc-watch --onSuccess 'node dist/microstat.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "dotenv": "8.2.0",
     "express": "4.17.1",
     "format-microformat": "0.11.1",
@@ -25,35 +29,54 @@
     "minilog": "3.1.0",
     "mkdirp": "1.0.3",
     "moment": "2.24.0",
-    "request": "2.88.2",
     "send-webmention": "2.0.0"
   },
   "devDependencies": {
-    "eslint": "^6.8.0"
+    "@types/minilog": "^2.0.29",
+    "@types/mkdirp": "^1.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "eslint": "^6.8.0",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.1.1",
+    "prettier": "^2.0.2",
+    "tsc-watch": "^4.2.3",
+    "typescript": "^3.8.3"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/joshdick/microstat.git"
   },
   "eslintConfig": {
-    "extends": "eslint:recommended",
-    "parserOptions": {
-      "ecmaVersion": 8
-    },
-    "env": {
-      "es6": true,
-      "node": true
-    },
-    "rules": {
-      "no-console": "off",
-      "semi": [
-        "error",
-        "always"
-      ],
-      "indent": [
-        "error",
-        "tab"
-      ]
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "ignorePatterns": [
+      "dist/",
+      "node_modules/"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && yarn check --integrity"
     }
+  },
+  "lint-staged": {
+    "src/**/*.{js,ts,json,md}": [
+      "prettier --check"
+    ],
+    "./*.{json,md}": [
+      "prettier --check"
+    ],
+    "src/**/*.{j,t}s": [
+      "eslint"
+    ]
   }
 }
