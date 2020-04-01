@@ -13,7 +13,6 @@ const mkdirp = require('mkdirp');
 const request = require('request');
 const webmention = require('send-webmention');
 
-const mkdirpAsync = util.promisify(mkdirp);
 const postAsync = util.promisify(request.post);
 const unlinkAsync = util.promisify(fs.unlink);
 const writeFileAsync = util.promisify(fs.writeFile);
@@ -57,6 +56,8 @@ app.use('/micropub', micropub({
 		endpoint: process.env.INDIEAUTH_TOKEN_ENDPOINT
 	},
 
+	userAgent: 'microstat/1.0.0 (https://github.com/joshdick/microstat)',
+
 	handler: async (micropubDocument /*, req */) => {
 		// TODO: Inspect all [0] index references in this handler;
 		// process multiple elements instead of just the first element as appropriate?
@@ -82,7 +83,7 @@ app.use('/micropub', micropub({
 		const contents = await formatter.format(preFormatted);
 
 		const absolutePath = path.resolve(process.env.LOCAL_POSTS_DIR, fileName);
-		await mkdirpAsync(path.dirname(absolutePath));
+		await mkdirp(path.dirname(absolutePath));
 		await writeFileAsync(absolutePath, contents);
 
 		try {
