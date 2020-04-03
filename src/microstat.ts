@@ -63,6 +63,8 @@ Please reconfigure POST_URL_TEMPLATE to conform to the format specified in ${CON
 `);
 }
 
+const postTagsKey = process.env.POST_TAGS_KEY || 'tags';
+
 // TODO: Validate remaining config values.
 
 // ---
@@ -86,17 +88,16 @@ const formatTags: (formattedContents: string) => string = formattedContents => {
 
   // If there are no tags, we don't have to do anything.
   if (hasTags) {
+    // Replace the post tags key first to prevent trailing whitespace
+    // from occurring later if POST_TAG_STYLES.YAML_LIST is used
+    result = result.replace(/^tags: ?/gim, `${postTagsKey}: `);
+
     // Tags are already SPACE_DELIMITED by default from `format-microformat`
     if (postTagsStyle === POST_TAG_STYLES.YAML_LIST) {
       const spaceDelimitedTags = tagMatch[1];
       const tags = spaceDelimitedTags.split(' ');
       const yamlTags = tags.map(tag => `- ${tag}`).join('\n');
-      result = formattedContents.replace(spaceDelimitedTagRegex, `tags:\n${yamlTags}`);
-    }
-
-    const postTagsKey = process.env.POST_TAGS_KEY;
-    if (postTagsKey) {
-      result = result.replace(/^tags: ?/gim, `${postTagsKey}: `);
+      result = formattedContents.replace(spaceDelimitedTagRegex, `${postTagsKey}:\n${yamlTags}`);
     }
   }
 
