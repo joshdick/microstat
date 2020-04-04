@@ -1,7 +1,5 @@
 # microstat
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/joshdick/microstat.svg)](https://greenkeeper.io/)
-
 A self-hosted Micropub endpoint for statically-generated microblogs. 📝⚡️
 
 ## What Is This Thing?
