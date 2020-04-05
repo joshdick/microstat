@@ -35,7 +35,7 @@ PUBLISH_COMMAND=/path/to/a/script
 
 # If set, controls the format of the tags list
 # in the generated front matter of each post.
-# Valid values are `space_delimited` or `yaml_list`.
+# Valid values are `space_delimited` (Jekyll style) or `yaml_list` (Hugo style).
 # Defaults to `space_delimited` if unset.
 #POST_TAGS_STYLE=space_delimited
 
