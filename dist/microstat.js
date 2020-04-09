@@ -9,60 +9,25 @@ const axios_1 = require("axios");
 const express = require("express");
 const Minilog = require("minilog");
 const MicropubFormatter = require('format-microformat'); // eslint-disable-line @typescript-eslint/no-var-requires
-const moment = require("moment");
 const micropub = require('micropub-express'); // eslint-disable-line @typescript-eslint/no-var-requires
 const mkdirp = require("mkdirp");
 const webmention = require('send-webmention'); // eslint-disable-line @typescript-eslint/no-var-requires
+const configValidator_1 = require("./configValidator");
+const constants_1 = require("./constants");
 const unlinkAsync = util_1.promisify(fs_1.unlink);
 const writeFileAsync = util_1.promisify(fs_1.writeFile);
 const log = Minilog('microstat');
 Minilog.enable();
-const handleFatalError = (error) => {
-    log.error(error);
-    process.exit(1);
-};
-// Validate configuration.
-// `..` will either be the 'src' or 'dist' folder depending on how microstat is started.
-const CONFIG_PATH = path_1.resolve(`${path_1.dirname(require.main.filename)}/../config/config`);
-if (!fs_1.existsSync(CONFIG_PATH)) {
-    handleFatalError(`Couldn't read configuration!
-
-Please copy ${CONFIG_PATH}.dist to ${CONFIG_PATH}
-and modify the values as described in the comments.
-`);
-}
-require('dotenv').config({ path: CONFIG_PATH });
-// Validate post tags style configuration.
-const POST_TAG_STYLES = Object.freeze({
-    SPACE_DELIMITED: Symbol('tag_style:space_delimited'),
-    YAML_LIST: Symbol('tag_style:yaml_list'),
-});
-let postTagsStyle = POST_TAG_STYLES.SPACE_DELIMITED;
-if (process.env.POST_TAGS_STYLE) {
-    const configuredPostTagStyle = process.env.POST_TAGS_STYLE.toLocaleUpperCase();
-    if (!POST_TAG_STYLES[configuredPostTagStyle]) {
-        handleFatalError(`Configured POST_TAG_STYLE is invalid!
-
-Please reconfigure POST_TAG_STYLE to be one of the values specified in ${CONFIG_PATH}.dist.
-`);
-    }
-    postTagsStyle = POST_TAG_STYLES[configuredPostTagStyle];
-}
-// Validate post URL template.
-const POST_URL_TEMPLATE_REGEX = /\$\{postName\}/;
-if (!(process.env.POST_URL_TEMPLATE || '').match(POST_URL_TEMPLATE_REGEX)) {
-    handleFatalError(`Configured POST_URL_TEMPLATE is invalid!
-
-Please reconfigure POST_URL_TEMPLATE to conform to the format specified in ${CONFIG_PATH}.dist.
-`);
-}
-const postTagsKey = process.env.POST_TAGS_KEY || 'tags';
-// TODO: Validate remaining config values.
+// Prevalidate all configuration; this should allow use of 'config.get'
+// anywhere else in this file without causing a fatal error
+const configValidator = new configValidator_1.default(log);
+configValidator.validate();
+const config = require('config'); // eslint-disable-line @typescript-eslint/no-var-requires
 // ---
 const app = express();
 const formatter = new MicropubFormatter({
     deriveCategory: false,
-    layoutName: process.env.POST_LAYOUT_NAME || false,
+    layoutName: config.get('posts.layoutName') || false,
     noMarkdown: true,
 });
 // Format tags by parsing and reformatting the already-formatted content.
@@ -76,11 +41,13 @@ const formatTags = formattedContents => {
     let result = formattedContents;
     // If there are no tags, we don't have to do anything.
     if (hasTags) {
+        const postTagsKey = config.get('posts.tags.key');
         // Replace the post tags key first to prevent trailing whitespace
         // from occurring later if POST_TAG_STYLES.YAML_LIST is used
         result = result.replace(/^tags: ?/gim, `${postTagsKey}: `);
         // Tags are already SPACE_DELIMITED by default from `format-microformat`
-        if (postTagsStyle === POST_TAG_STYLES.YAML_LIST) {
+        const postTagsStyle = constants_1.POST_TAG_STYLES[config.get('post.tags.style').toLocaleUpperCase()];
+        if (postTagsStyle === constants_1.POST_TAG_STYLES.YAML_LIST) {
             const spaceDelimitedTags = tagMatch[1];
             const tags = spaceDelimitedTags.split(' ');
             const yamlTags = tags.map(tag => `- ${tag}`).join('\n');
@@ -95,8 +62,8 @@ const isMicroblogReply = properties => {
 };
 app.use('/micropub', micropub({
     tokenReference: {
-        me: process.env.INDIEAUTH_IDENTITY,
-        endpoint: process.env.INDIEAUTH_TOKEN_ENDPOINT,
+        me: config.get('site.indieauth.identity'),
+        endpoint: config.get('site.indieauth.tokenEndpoint'),
     },
     userAgent: 'microstat/1.0.0 (https://github.com/joshdick/microstat)',
     handler: async (micropubDocument /*, req */) => {
@@ -111,20 +78,18 @@ app.use('/micropub', micropub({
         const { properties } = preFormatted;
         const published = properties.published[0];
         const slug = properties.slug[0];
-        const suffix = slug ? `_${slug}` : '';
-        const postDate = moment(published).format('YYYY/MM/DD_HH.mm.ss');
-        const postName = `${postDate}${suffix}`;
-        const fileName = `${postName}.md`;
-        const postUrl = process.env.POST_URL_TEMPLATE.replace(/\$\{postName\}/i, postName);
+        const fileName = config.get('posts.generators.filename')(published, slug);
+        const postUrl = config.get('posts.generators.url')(published, slug);
         let contents = await formatter.format(preFormatted);
         contents = formatTags(contents);
-        const absolutePath = path_1.resolve(process.env.LOCAL_POSTS_DIR, fileName);
+        const absolutePath = path_1.resolve(config.get('site.root'), fileName);
         await mkdirp(path_1.dirname(absolutePath));
         await writeFileAsync(absolutePath, contents);
         try {
             log.log('Publishing post...');
-            child_process_1.execSync(process.env.PUBLISH_COMMAND.replace(' ', '\\ '), {
-                cwd: path_1.dirname(process.env.PUBLISH_COMMAND),
+            const publishCommand = config.get('app.publishCommand');
+            child_process_1.execSync(publishCommand.replace(' ', '\\ '), {
+                cwd: path_1.dirname(publishCommand),
             });
         }
         catch (publishError) {
@@ -184,11 +149,12 @@ app.use('/micropub', micropub({
                 }
             }
         }
-        if (process.env.MICROBLOG_PING_FEED_URL && !replyUrls) {
+        const microblogPingFeedURL = config.has('app.microblogPingFeedURL') && config.get('app.microblogPingFeedURL');
+        if (microblogPingFeedURL && !replyUrls) {
             try {
-                log.log(`Attempting to ping micro.blog with feed URL [${process.env.MICROBLOG_PING_FEED_URL}]...`);
+                log.log(`Attempting to ping micro.blog with feed URL [${microblogPingFeedURL}]...`);
                 await axios_1.default.post('https://micro.blog/ping', querystring.stringify({
-                    url: process.env.MICROBLOG_PING_FEED_URL,
+                    url: microblogPingFeedURL,
                 }), {
                     headers: {
                         'content-type': 'application/x-www-form-urlencoded',
@@ -204,5 +170,6 @@ app.use('/micropub', micropub({
         return { url: postUrl };
     },
 }));
-app.listen(process.env.LISTEN_PORT, () => log.log(`Listening on port ${process.env.LISTEN_PORT}.`));
+const listenPort = config.get('app.listenPort');
+app.listen(listenPort, () => log.log(`Listening on port ${listenPort}.`));
 //# sourceMappingURL=microstat.js.map
