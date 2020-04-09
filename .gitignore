@@ -1,2 +1,3 @@
 config/local.js
+dist
 node_modules
