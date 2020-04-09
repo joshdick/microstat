@@ -41,6 +41,8 @@ const formatter = new MicropubFormatter({
 // TODO: This is not ideal since regex replacements may match actual content unintentionally,
 // instead of the intended metadata.
 // Format using the underlying Micropub document instead?
+const postTagsKey = config.get('posts.tags.key');
+const postTagsStyle = POST_TAG_STYLES[config.get('posts.tags.style').toLocaleUpperCase()];
 const formatTags: (formattedContents: string) => string = formattedContents => {
   const spaceDelimitedTagRegex = new RegExp(/^tags: (.*)$/gim);
   const tagMatch = spaceDelimitedTagRegex.exec(formattedContents);
@@ -49,14 +51,11 @@ const formatTags: (formattedContents: string) => string = formattedContents => {
 
   // If there are no tags, we don't have to do anything.
   if (hasTags) {
-    const postTagsKey = config.get('posts.tags.key');
-
     // Replace the post tags key first to prevent trailing whitespace
     // from occurring later if POST_TAG_STYLES.YAML_LIST is used
     result = result.replace(/^tags: ?/gim, `${postTagsKey}: `);
 
     // Tags are already SPACE_DELIMITED by default from `format-microformat`
-    const postTagsStyle = POST_TAG_STYLES[config.get('post.tags.style').toLocaleUpperCase()];
     if (postTagsStyle === POST_TAG_STYLES.YAML_LIST) {
       const spaceDelimitedTags = tagMatch[1];
       const tags = spaceDelimitedTags.split(' ');
@@ -72,6 +71,12 @@ const isMicroblogReply: (properties: { content: string[] }) => boolean = propert
   const content = properties.content;
   return content.some(subContent => subContent.match(/^\[@.*\]\(https?:\/\/micro\.blog\/.*\)/));
 };
+
+const microblogPingFeedURL = config.has('app.microblogPingFeedURL') && config.get('app.microblogPingFeedURL');
+const postFilenameGenerator = config.get('posts.generators.filename');
+const postUrlGenerator = config.get('posts.generators.url');
+const publishCommand = config.get('app.publishCommand');
+const siteRoot = config.get('site.root');
 
 app.use(
   '/micropub',
@@ -100,19 +105,18 @@ app.use(
       const published = properties.published[0];
       const slug = properties.slug[0];
 
-      const fileName = config.get('posts.generators.filename')(published, slug);
-      const postUrl = config.get('posts.generators.url')(published, slug);
+      const fileName = postFilenameGenerator(published, slug);
+      const postUrl = postUrlGenerator(published, slug);
 
       let contents = await formatter.format(preFormatted);
       contents = formatTags(contents);
 
-      const absolutePath = pathResolve(config.get('site.root'), fileName);
+      const absolutePath = pathResolve(siteRoot, fileName);
       await mkdirp(pathDirname(absolutePath));
       await writeFileAsync(absolutePath, contents);
 
       try {
         log.log('Publishing post...');
-        const publishCommand = config.get('app.publishCommand');
         execSync(publishCommand.replace(' ', '\\ '), {
           cwd: pathDirname(publishCommand),
         });
@@ -179,7 +183,6 @@ app.use(
         }
       }
 
-      const microblogPingFeedURL = config.has('app.microblogPingFeedURL') && config.get('app.microblogPingFeedURL');
       if (microblogPingFeedURL && !replyUrls) {
         try {
           log.log(`Attempting to ping micro.blog with feed URL [${microblogPingFeedURL}]...`);

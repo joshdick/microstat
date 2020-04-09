@@ -49,6 +49,16 @@ class ConfigValidator {
             this.handleFatalError(`Configured \`${param}\` must exist in the filesystem!`);
         }
     }
+    validateFunction(param) {
+        if (typeof this.config.get(param) !== 'function') {
+            this.handleFatalError(`Configured \`${param}\` must be a function!`);
+        }
+    }
+    validateString(param) {
+        if (typeof this.config.get(param) !== 'string') {
+            this.handleFatalError(`Configured \`${param}\` must be a string!`);
+        }
+    }
     validateAppConfig() {
         // app.listenPort
         const portError = 'Configured `app.listenPort` must be a number between 1 and 65535!';
@@ -75,21 +85,19 @@ class ConfigValidator {
     }
     validatePostsConfig() {
         // posts.generators.url
-        // TODO: Implement
+        this.validateFunction('posts.generators.url');
         // posts.generators.filename
-        // TODO: Implement
+        this.validateFunction('posts.generators.filename');
         // posts.layoutName
-        // TODO: Implement
+        this.validateString('posts.layoutName');
         // posts.tags.key
-        if (typeof this.config.get('posts.tags.key') !== 'string') {
-            this.handleFatalError('Configured `posts.tags.key` must be a string!');
-        }
+        this.validateString('posts.tags.key');
         // posts.tags.style
         const configuredPostTagStyle = this.config.get('posts.tags.style').toLocaleUpperCase();
         if (!constants_1.POST_TAG_STYLES[configuredPostTagStyle]) {
-            this.handleFatalError(`Configured POST_TAG_STYLE is invalid!
+            this.handleFatalError(`Configured \`posts.tags.style\` is invalid!
 
-Please reconfigure POST_TAG_STYLE to be one of the values specified in \`dist.js\`.`);
+Please reconfigure \`posts.tags.style\` to be one of the values specified in \`dist.js\`.`);
         }
     }
     validateMediaConfig() {
