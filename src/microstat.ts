@@ -31,9 +31,11 @@ const config = require('config'); // eslint-disable-line @typescript-eslint/no-v
 // ---
 
 const app = express();
+
 const formatter = new MicropubFormatter({
   deriveCategory: false, // don't write categories
   layoutName: config.get('posts.layoutName') || false,
+  filesStyle: config.get('media.generators.filenameSuffix'),
   noMarkdown: true, // input is already expected to be in Markdown format
 });
 
@@ -72,6 +74,7 @@ const isMicroblogReply: (properties: { content: string[] }) => boolean = propert
   return content.some(subContent => subContent.match(/^\[@.*\]\(https?:\/\/micro\.blog\/.*\)/));
 };
 
+const mediaFilenamePrefixGenerator = config.get('media.generators.filenamePrefix');
 const microblogPingFeedURL = config.has('app.microblogPingFeedURL') && config.get('app.microblogPingFeedURL');
 const postFilenameGenerator = config.get('posts.generators.filename');
 const postUrlGenerator = config.get('posts.generators.url');
@@ -100,7 +103,7 @@ app.use(
 
       if (type !== 'h-entry') throw new Error(`Can't handle micropub document type [${type}].`);
 
-      const { properties } = preFormatted;
+      const { properties, files } = preFormatted;
 
       const published = properties.published[0];
       const slug = properties.slug[0];
@@ -111,9 +114,24 @@ app.use(
       let contents = await formatter.format(preFormatted);
       contents = formatTags(contents);
 
-      const absolutePath = pathResolve(siteRoot, fileName);
-      await mkdirp(pathDirname(absolutePath));
-      await writeFileAsync(absolutePath, contents);
+      // Write post contents to disk
+      const postAbsolutePath = pathResolve(siteRoot, fileName);
+      await mkdirp(pathDirname(postAbsolutePath));
+      await writeFileAsync(postAbsolutePath, contents);
+
+      // Write media files to disk
+      const mediaAbsolutePaths = []; // Used for cleanup later if a problem happpens
+      if (files) {
+        const mediaPathPrefix = pathResolve(siteRoot, mediaFilenamePrefixGenerator(published, slug));
+        for (const file of files) {
+          const mediaAbsolutePath = pathResolve(mediaPathPrefix, file.filename); // `filename` is the rendered output of `'media.generators.filenameSuffix`
+          // This `mkdirp()` is probably redundant after the first iteration through the loop,
+          // but may need to happen multiple times if different files have different suffix paths
+          await mkdirp(pathDirname(mediaAbsolutePath));
+          await writeFileAsync(mediaAbsolutePath, file.buffer);
+          mediaAbsolutePaths.push(mediaAbsolutePath);
+        }
+      }
 
       try {
         log.log('Publishing post...');
@@ -127,7 +145,11 @@ app.use(
           // Attempt to clean up the unpublished post to prevent duplicate posts
           // from being published if reattempts are made
           log.log('Cleaning up unpublished post...');
-          await unlinkAsync(absolutePath);
+          await unlinkAsync(postAbsolutePath);
+          log.log('Cleaning up unpublished media...');
+          for (const mediaAbsolutePath of mediaAbsolutePaths) {
+            await unlinkAsync(mediaAbsolutePath);
+          }
           log.log('Done cleaning up.');
         } catch (cleanupError) {
           log.error("Couldn't clean up unpublished post!", cleanupError);

@@ -18,6 +18,18 @@ const generatePostUrl = (timestamp, slug) => {
   return `https://example.com/microblog/${filename.replace(/\.md$/, '.html')}`;
 };
 
+// Override the implementation of this function to fit your needs.
+// see `media.generators.filenamePrefix` below for more details.
+const generateMediaFilenamePrefix = (timestamp, slug) => {
+  return 'static/';
+};
+
+// Override the implementation of this function to fit your needs.
+// see `media.generators.filenameSuffix` below for more details.
+const generateMediaFilenameSuffix = () => {
+  return 'microblog_assets/:year/:month/:slug_:filesslug';
+};
+
 module.exports = {
   app: {
     //Which local TCP port the server should listen on.
@@ -71,5 +83,22 @@ module.exports = {
       style: 'space_delimited',
     },
   },
-  media: {},
+  media: {
+    // Note: Media files will be written to disk at a location which is the
+    // combination of `media.generators.filenamePrefix` and `media.generators.filenameSuffix`, in that order.
+    // Directories in generated outputs should be separated by forward slashes,
+    // and will be automatically created if they don't exist in the fileystem.
+    generators: {
+      // Function that generates a path relative to `site.root`,
+      // which will have `filenameSuffix` appended when media files are written to disk.
+      // Can return empty string ('') if you want the location of files on disk
+      // to exactly match the filenames in the front matter of generated posts.
+      filenamePrefix: raw(generateMediaFilenamePrefix),
+
+      // Function that generates a unique filename for each media file, relative to `media.generators.filenamePrefix`.
+      // Can contain any tokens used in Jekyll permalinks, even if you don't use Jekyll: https://jekyllrb.com/docs/permalinks/
+      // Generated output should not contain a file extension, but rather, should always contain the string `:filesslug`.
+      filenameSuffix: raw(generateMediaFilenameSuffix),
+    },
+  },
 };

@@ -122,7 +122,39 @@ Please reconfigure \`posts.tags.style\` to be one of the values specified in \`d
   }
 
   private validateMediaConfig(): void {
-    // TODO: Implement
+    // media.generators.filenamePrefix
+    this.validateFunction('media.generators.filenamePrefix');
+    try {
+      const generatePrefix = this.config.get('media.generators.filenamePrefix');
+      const result = generatePrefix(new Date().getTime(), 'dummy-slug');
+      if (typeof result !== 'string') {
+        // Just trigger the `catch` block below;
+        // it could also be triggered if the generator itself throws an error.
+        throw new Error('Wrong output type!');
+      }
+    } catch (error) {
+      this.handleFatalError(
+        `Configured \`media.generators.filenamePrefix\` must be a function that generates a string!`
+      );
+    }
+
+    // media.generators.filenameSuffix
+    this.validateFunction('media.generators.filenameSuffix');
+    try {
+      const generateSuffix = this.config.get('media.generators.filenameSuffix');
+      const result = generateSuffix();
+      // The following checks just trigger the `catch` block below;
+      // it could also be triggered if the generator itself throws an error.
+      if (typeof result !== 'string') {
+        throw new Error('Wrong output type!');
+      } else if (!result.match(/:filesslug/)) {
+        throw new Error('Did not contain `:filesslug`!');
+      }
+    } catch (error) {
+      this.handleFatalError(
+        `Configured \`media.generators.filenameSuffix\` must be a function that generates a string that contains the substring \`:filesslug\`!`
+      );
+    }
   }
 
   // Validate configuration.
