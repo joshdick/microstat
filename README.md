@@ -25,8 +25,8 @@ microstat requires [Node.js](https://nodejs.org) 7.6 or newer. Once you've insta
 $ git clone https://github.com/joshdick/microstat.git
 $ cd microstat
 $ npm install
-$ cp config/config.dist config/config
-# Edit `config/config` and change the values to fit your site as described by the comments above each value
+$ cp config/dist.js config/local.js
+# Edit `config/local.js` and change the values to fit your site as described by the comments above each value
 $ npm start
 ```
 
