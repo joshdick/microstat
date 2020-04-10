@@ -124,9 +124,10 @@ app.use(
       if (files) {
         const mediaPathPrefix = pathResolve(siteRoot, mediaFilenamePrefixGenerator(published, slug));
         for (const file of files) {
-          const mediaAbsolutePath = pathResolve(mediaPathPrefix, file.filename); // `filename` is the rendered output of `'media.generators.filenameSuffix`
+          // `file.filename` is the rendered output of `media.generators.filenameSuffix`.
+          const mediaAbsolutePath = pathResolve(mediaPathPrefix, file.filename);
           // This `mkdirp()` is probably redundant after the first iteration through the loop,
-          // but may need to happen multiple times if different files have different suffix paths
+          // but it may need to happen multiple times if different files have different path suffixes
           await mkdirp(pathDirname(mediaAbsolutePath));
           await writeFileAsync(mediaAbsolutePath, file.buffer);
           mediaAbsolutePaths.push(mediaAbsolutePath);
