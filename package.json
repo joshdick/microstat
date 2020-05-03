@@ -30,7 +30,7 @@
     "micropub-express": "0.8.1",
     "minilog": "3.1.0",
     "mkdirp": "1.0.4",
-    "moment": "2.24.0",
+    "moment": "2.25.0",
     "send-webmention": "2.0.0",
     "snyk": "^1.316.1"
   },
