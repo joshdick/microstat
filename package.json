@@ -32,7 +32,7 @@
     "mkdirp": "1.0.4",
     "moment": "2.25.3",
     "send-webmention": "2.0.0",
-    "snyk": "^1.317.0"
+    "snyk": "^1.319.1"
   },
   "devDependencies": {
     "@types/minilog": "^2.0.29",
