@@ -18,9 +18,7 @@
     "lint:fix": "eslint --fix 'src/**/*.{j,t}s' && prettier --write 'src/**/*.{js,ts,json,md}' '*.{json,md}'",
     "start": "yarn build && node dist/microstat.js",
     "start:dev": "tsc-watch --onSuccess 'node dist/microstat.js'",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "snyk-protect": "snyk protect",
-    "prepare": "yarn run snyk-protect"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -31,8 +29,7 @@
     "minilog": "3.1.0",
     "mkdirp": "1.0.4",
     "moment": "2.27.0",
-    "send-webmention": "2.0.0",
-    "snyk": "^1.346.0"
+    "send-webmention": "2.0.0"
   },
   "devDependencies": {
     "@types/minilog": "^2.0.29",
@@ -81,6 +78,5 @@
     "src/**/*.{j,t}s": [
       "eslint"
     ]
-  },
-  "snyk": true
+  }
 }
