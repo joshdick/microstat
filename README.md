@@ -19,7 +19,7 @@ Here's how it works:
 
 ## Get Going
 
-microstat requires [Node.js](https://nodejs.org) 7.6 or newer. Once you've installed Node.js:
+microstat requires [Node.js](https://nodejs.org) v12 or newer. Once you've installed Node.js:
 
 ```bash
 $ git clone https://github.com/joshdick/microstat.git
