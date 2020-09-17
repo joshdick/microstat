@@ -24,7 +24,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "axios": "^0.20.0",
+    "axios": "^0.19.0",
     "config": "^3.3.1",
     "express": "4.17.1",
     "format-microformat": "0.11.1",
