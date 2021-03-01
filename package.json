@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "config": "^3.3.3",
+    "config": "^3.3.4",
     "express": "4.17.1",
     "format-microformat": "0.11.1",
     "micropub-express": "0.9.1",
@@ -37,14 +37,14 @@
   "devDependencies": {
     "@types/minilog": "^2.0.29",
     "@types/mkdirp": "^1.0.1",
-    "@typescript-eslint/eslint-plugin": "^3.9.1",
-    "@typescript-eslint/parser": "^3.9.1",
-    "eslint": "^7.7.0",
-    "husky": "^4.2.5",
-    "lint-staged": "^10.2.11",
-    "prettier": "^2.0.5",
+    "@typescript-eslint/eslint-plugin": "^4.15.2",
+    "@typescript-eslint/parser": "^4.15.2",
+    "eslint": "^7.21.0",
+    "husky": "^5.1.2",
+    "lint-staged": "^10.5.4",
+    "prettier": "^2.2.1",
     "tsc-watch": "^4.2.9",
-    "typescript": "^3.9.2"
+    "typescript": "^4.2.2"
   },
   "repository": {
     "type": "git",
