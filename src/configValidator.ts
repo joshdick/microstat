@@ -19,7 +19,7 @@ export default class ConfigValidator {
         `Couldn't read configuration!
   Please copy ${CONFIG_DIRECTORY_PATH}/dist.js to ${LOCAL_CONFIG_PATH}
   and modify the values as described in the comments.
-  `
+  `,
       );
     }
 
@@ -134,7 +134,7 @@ Please reconfigure \`posts.tags.style\` to be one of the values specified in \`d
       }
     } catch (error) {
       this.handleFatalError(
-        `Configured \`media.generators.filenamePrefix\` must be a function that generates a string!`
+        `Configured \`media.generators.filenamePrefix\` must be a function that generates a string!`,
       );
     }
 
@@ -152,7 +152,7 @@ Please reconfigure \`posts.tags.style\` to be one of the values specified in \`d
       }
     } catch (error) {
       this.handleFatalError(
-        `Configured \`media.generators.filenameSuffix\` must be a function that generates a string that contains the substring \`:filesslug\`!`
+        `Configured \`media.generators.filenameSuffix\` must be a function that generates a string that contains the substring \`:filesslug\`!`,
       );
     }
   }
