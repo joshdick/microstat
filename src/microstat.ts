@@ -9,7 +9,7 @@ import * as express from 'express';
 import * as Minilog from 'minilog';
 const MicropubFormatter = require('format-microformat'); // eslint-disable-line @typescript-eslint/no-var-requires
 const micropub = require('micropub-express'); // eslint-disable-line @typescript-eslint/no-var-requires
-import * as mkdirp from 'mkdirp';
+import { mkdirp } from 'mkdirp';
 const webmention = require('send-webmention'); // eslint-disable-line @typescript-eslint/no-var-requires
 
 import ConfigValidator from './configValidator';
@@ -178,7 +178,7 @@ app.use(
                   headers: {
                     'content-type': 'application/x-www-form-urlencoded',
                   },
-                }
+                },
               );
             } else {
               log.log('Reply is not targeted at a micro.blog user, auto-discovering Webmention endpoint.');
@@ -194,7 +194,7 @@ app.use(
                     }
                     if (!obj.success) reject(obj);
                     resolve(obj);
-                  }
+                  },
                 );
               });
             }
@@ -218,7 +218,7 @@ app.use(
               headers: {
                 'content-type': 'application/x-www-form-urlencoded',
               },
-            }
+            },
           );
           log.log('Successfully pinged micro.blog.');
         } catch (pingError) {
@@ -229,7 +229,7 @@ app.use(
 
       return { url: postUrl };
     },
-  })
+  }),
 );
 
 const listenPort = config.get('app.listenPort');
