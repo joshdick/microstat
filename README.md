@@ -34,7 +34,7 @@ You can manage and start microstat as a [systemd](https://en.wikipedia.org/wiki/
 
 Note that microstat doesn't need to run on the same port, or even the same server, as your microblog. You could directly advertise your microstat server as your site's Micropub endpoint, or you can advertise a proxy to it.
 
-Here's how I proxy to microstat on [my microblog](https://joshdick.net/microblog):
+Here's how I proxy to microstat on [my microblog](https://joshdick.net/microblog.html):
 
 1. Advertise my site's Micropub endpoint by including the following in its HTML:
 
